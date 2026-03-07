@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { updateGuildSettings, kickMember, setMemberRole, createGuildQuest } from '../store/guildSlice';
-import { X, Save, UserMinus, Shield, Crown, Plus, Trash2, Settings } from 'lucide-react';
+import { updateGuildSettings, kickMember, setMemberRole, createGuildQuest, handleJoinRequest } from '../store/guildSlice';
+import { X, Save, UserMinus, Shield, Crown, Plus, Trash2, Settings, UserPlus, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { contentFilter } from '../utils/contentFilter';
@@ -16,7 +16,7 @@ const GuildSettingsModal: React.FC<GuildSettingsModalProps> = ({ isOpen, onClose
   const dispatch = useDispatch<AppDispatch>();
   const { guild } = useSelector((state: RootState) => state.guild);
   const { currentUser } = useSelector((state: RootState) => state.user);
-  const [activeTab, setActiveTab] = useState<'general' | 'members' | 'quests'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'members' | 'requests' | 'quests'>('general');
 
   // General Settings State
   const [description, setDescription] = useState(guild?.description || '');
@@ -112,11 +112,11 @@ const GuildSettingsModal: React.FC<GuildSettingsModalProps> = ({ isOpen, onClose
 
         {/* Tabs */}
         <div className="flex border-b border-slate-800">
-          {(['general', 'members', 'quests'] as const).map((tab) => (
+          {(['general', 'members', 'requests', 'quests'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 text-sm font-bold transition-colors ${
+              className={`flex-1 py-3 text-sm font-bold transition-colors relative ${
                 activeTab === tab
                   ? 'bg-slate-800 text-white border-b-2 border-indigo-500'
                   : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/30'
@@ -124,6 +124,16 @@ const GuildSettingsModal: React.FC<GuildSettingsModalProps> = ({ isOpen, onClose
             >
               {tab === 'general' && 'Настройки'}
               {tab === 'members' && 'Участники'}
+              {tab === 'requests' && (
+                <div className="flex items-center justify-center gap-2">
+                  Заявки
+                  {guild.joinRequests && guild.joinRequests.filter(r => r.status === 'pending').length > 0 && (
+                    <span className="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                      {guild.joinRequests.filter(r => r.status === 'pending').length}
+                    </span>
+                  )}
+                </div>
+              )}
               {tab === 'quests' && 'Задания'}
             </button>
           ))}
@@ -211,6 +221,53 @@ const GuildSettingsModal: React.FC<GuildSettingsModalProps> = ({ isOpen, onClose
                   )}
                 </div>
               ))}
+            </div>
+          )}
+
+          {activeTab === 'requests' && (
+            <div className="space-y-4">
+              {!guild.joinRequests || guild.joinRequests.filter(r => r.status === 'pending').length === 0 ? (
+                <div className="text-center py-10 text-slate-500">
+                  <UserPlus className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>Нет новых заявок на вступление</p>
+                </div>
+              ) : (
+                guild.joinRequests.filter(r => r.status === 'pending').map((request) => (
+                  <div key={request.id} className="flex items-center justify-between p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center font-bold text-white overflow-hidden border border-slate-700">
+                        <img src={`/avatars/${request.avatar}.png`} alt={request.username} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/avatars/warrior.png'; }} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-white flex items-center gap-2">
+                          {request.username}
+                          <span className="text-xs font-normal text-amber-400">Ур. {request.level}</span>
+                        </div>
+                        {request.message && (
+                          <div className="text-sm text-slate-400 italic mt-1">«{request.message}»</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => dispatch(handleJoinRequest({ email: currentUser.email, requestId: request.id, action: 'accept' }))}
+                        className="p-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg transition-colors"
+                        title="Принять"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button 
+                        onClick={() => dispatch(handleJoinRequest({ email: currentUser.email, requestId: request.id, action: 'reject' }))}
+                        className="p-2 bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white rounded-lg transition-colors"
+                        title="Отклонить"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 

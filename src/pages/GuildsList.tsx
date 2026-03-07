@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { fetchGuildsList, joinGuild, createGuild } from '../store/guildSlice';
+import { fetchGuildsList, joinGuild, createGuild, requestJoinGuild } from '../store/guildSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Shield, Search, PlusCircle, Lock, Unlock, Crown, X, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -30,15 +30,24 @@ const GuildsList: React.FC = () => {
     dispatch(fetchGuildsList(false));
   }, [dispatch]);
 
-  const handleJoin = async (guildId: string) => {
+  const handleJoin = async (guildId: string, isOpen: boolean) => {
     if (!currentUser?.email) return;
-    if (window.confirm(`Вступить в гильдию?`)) {
-        setJoiningGuildId(guildId);
-        const result = await dispatch(joinGuild({ email: currentUser.email, guildId }));
-        setJoiningGuildId(null);
-        
-        if (joinGuild.fulfilled.match(result)) {
-            navigate('/guild');
+    
+    if (isOpen) {
+        if (window.confirm(`Вступить в гильдию?`)) {
+            setJoiningGuildId(guildId);
+            const result = await dispatch(joinGuild({ email: currentUser.email, guildId }));
+            setJoiningGuildId(null);
+            
+            if (joinGuild.fulfilled.match(result)) {
+                navigate('/guild');
+            }
+        }
+    } else {
+        if (window.confirm(`Подать заявку на вступление в закрытую гильдию?`)) {
+            setJoiningGuildId(guildId);
+            await dispatch(requestJoinGuild({ email: currentUser.email, guildId }));
+            setJoiningGuildId(null);
         }
     }
   };
@@ -139,7 +148,8 @@ const GuildsList: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group bg-slate-900/50 hover:bg-slate-800/80 rounded-2xl p-6 border border-slate-800 hover:border-indigo-500/30 transition-all duration-300 relative overflow-hidden"
+                    onClick={() => navigate(`/guilds/${guild.guildId}`)}
+                    className="group bg-slate-900/50 hover:bg-slate-800/80 rounded-2xl p-6 border border-slate-800 hover:border-indigo-500/30 transition-all duration-300 relative overflow-hidden cursor-pointer"
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                         <Shield size={120} />
@@ -160,7 +170,7 @@ const GuildsList: React.FC = () => {
                             </div>
                         </div>
                         
-                        <h3 className="text-xl font-bold text-white mb-1 truncate pr-2">{guild.name}</h3>
+                        <h3 className="text-xl font-bold text-white mb-1 truncate pr-2 group-hover:text-indigo-400 transition-colors">{guild.name}</h3>
                         <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-3">
                             <Crown size={14} />
                             <span>Уровень {guild.level}</span>
@@ -176,20 +186,28 @@ const GuildsList: React.FC = () => {
                                 <span>{guild.memberCount} / {guild.maxMembers}</span>
                             </div>
 
-                            <button
-                                onClick={() => handleJoin(guild.guildId)}
-                                disabled={!guild.isOpen || guild.memberCount >= guild.maxMembers || joiningGuildId === guild.guildId}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                                    !guild.isOpen || guild.memberCount >= guild.maxMembers
-                                    ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/20'
-                                }`}
-                            >
-                                {joiningGuildId === guild.guildId ? (
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                ) : null}
-                                {guild.memberCount >= guild.maxMembers ? 'Мест нет' : 'Вступить'}
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); navigate(`/guilds/${guild.guildId}`); }}
+                                    className="px-4 py-2 rounded-lg text-sm font-bold transition-all bg-slate-800 hover:bg-slate-700 text-white"
+                                >
+                                    Профиль
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); handleJoin(guild.guildId, guild.isOpen); }}
+                                    disabled={guild.memberCount >= guild.maxMembers || joiningGuildId === guild.guildId}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
+                                        guild.memberCount >= guild.maxMembers
+                                        ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/20'
+                                    }`}
+                                >
+                                    {joiningGuildId === guild.guildId ? (
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : null}
+                                    {guild.memberCount >= guild.maxMembers ? 'Мест нет' : guild.isOpen ? 'Вступить' : 'Заявка'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </motion.div>

@@ -36,7 +36,7 @@ export const fetchLeaderboard = createAsyncThunk(
           weeklyXp: Number(item.weeklyXp) || 0,
           totalQuestsCompleted: Number(item.totalQuestsCompleted) || Number(item.completedQuests) || 0,
           streakDays: Number(item.streakDays) || 0,
-          avatar: item.avatar || 'warrior',
+          avatar: item.avatar || item.avatarId || item.selectedAvatar || item.skin || 'warrior',
           id: item.id,
         }));
 

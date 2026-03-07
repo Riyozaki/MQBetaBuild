@@ -268,6 +268,31 @@ export const contributeGuildQuest = createAsyncThunk(
   }
 );
 
+export const requestJoinGuild = createAsyncThunk(
+  'guild/requestJoin',
+  async (payload: { email: string; guildId: string; message?: string }) => {
+    const response = await api.requestJoinGuild(payload.email, payload.guildId, payload.message);
+    if (response.success) {
+      toast.success('Заявка отправлена! Ожидайте решения лидера.');
+      return response;
+    }
+    throw new Error(response.message || 'Failed to request join');
+  }
+);
+
+export const handleJoinRequest = createAsyncThunk(
+  'guild/handleRequest',
+  async (payload: { email: string; requestId: string; action: 'accept' | 'reject' }, { dispatch }) => {
+    const response = await api.handleJoinRequest(payload.email, payload.requestId, payload.action);
+    if (response.success) {
+      toast.success(payload.action === 'accept' ? 'Заявка принята!' : 'Заявка отклонена');
+      dispatch(fetchMyGuild(payload.email));
+      return response;
+    }
+    throw new Error(response.message || 'Failed to handle request');
+  }
+);
+
 export const sendGuildMessage = createAsyncThunk(
   'guild/sendMessage',
   async (payload: { email: string; message: string; messageType?: 'text' | 'system' | 'achievement' }, { dispatch }) => {
@@ -337,6 +362,7 @@ const guildSlice = createSlice({
       .addCase(leaveGuild.fulfilled, (state) => {
         state.guild = null;
         state.chat = [];
+        state.lastGuildsFetch = 0; // Reset cache
       })
       // Create Guild
       .addCase(createGuild.pending, (state) => {

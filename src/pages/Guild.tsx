@@ -289,30 +289,39 @@ const Guild: React.FC = () => {
 
           {activeTab === 'members' && (
             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
+              <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/30">
+                <h3 className="font-bold text-white flex items-center gap-2">
+                  <Users size={18} className="text-indigo-400" />
+                  Состав гильдии ({guild.memberCount}/{guild.maxMembers})
+                </h3>
+              </div>
               <div className="divide-y divide-slate-800">
-                {guild.members.map((member) => (
+                {[...guild.members].sort((a, b) => b.xpContributed - a.xpContributed).map((member) => (
                   <div key={member.email} className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl">
-                        {(() => {
-                           // Mock avatar logic if needed, or use first letter
-                           return member.username.charAt(0).toUpperCase();
-                        })()}
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl overflow-hidden relative group">
+                        {/* Assuming avatar logic is handled elsewhere, fallback to initial */}
+                        <span className="font-bold text-slate-400 group-hover:hidden">{member.username.charAt(0).toUpperCase()}</span>
+                        <div className="absolute inset-0 bg-indigo-500/20 hidden group-hover:flex items-center justify-center backdrop-blur-sm cursor-pointer transition-all">
+                            <Star size={16} className="text-indigo-300" />
+                        </div>
                       </div>
                       <div>
-                        <div className="font-bold text-white flex items-center gap-2">
+                        <div className="font-bold text-white flex items-center gap-2 text-lg">
                           {member.username}
-                          {member.role === 'leader' && <Crown size={14} className="text-amber-400" />}
-                          {member.role === 'officer' && <Shield size={14} className="text-blue-400" />}
+                          {member.role === 'leader' && <Crown size={16} className="text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" />}
+                          {member.role === 'officer' && <Shield size={16} className="text-blue-400 drop-shadow-[0_0_5px_rgba(96,165,250,0.5)]" />}
                         </div>
-                        <div className="text-xs text-slate-500">
-                          Ур. {member.level} • {member.className || 'Новичок'}
+                        <div className="text-sm text-slate-400 flex items-center gap-2 mt-0.5">
+                          <span className="px-2 py-0.5 bg-slate-800 rounded text-xs font-medium border border-slate-700">Ур. {member.level}</span>
+                          <span className="text-slate-500">•</span>
+                          <span className="text-slate-300">{member.className || 'Новичок'}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-indigo-400">{member.xpContributed} XP</div>
-                      <div className="text-[10px] text-slate-600 uppercase font-bold">Вклад</div>
+                    <div className="text-right flex flex-col items-end">
+                      <div className="text-base font-black text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.3)]">{member.xpContributed.toLocaleString()} XP</div>
+                      <div className="text-xs text-slate-500 font-medium mt-0.5">Вклад в гильдию</div>
                     </div>
                   </div>
                 ))}

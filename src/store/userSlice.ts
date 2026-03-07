@@ -651,8 +651,10 @@ export const purchaseItemAction = createAsyncThunk(
         condition: (_, { getState }) => {
             const state = getState() as RootState;
             if (state.user.pendingActions.purchase) {
+                toast.info('Подождите, предыдущая операция еще выполняется...');
                 return false;
             }
+            return true;
         }
     }
 );
@@ -665,7 +667,10 @@ export const equipSkinAction = createAsyncThunk(
         if (!user || !user.email) return rejectWithValue("No user");
         
         try {
-            await api.updateProgress(user.email, { 
+            // ИСПРАВЛЕНИЕ: Использовать updateProfile вместо updateProgress
+            // updateProfile гарантированно пишет в основную таблицу Users
+            await api.updateProfile({ 
+                email: user.email,
                 avatar: avatarId,
                 visitorAvatar: avatarId 
             });
@@ -678,7 +683,11 @@ export const equipSkinAction = createAsyncThunk(
     {
         condition: (_, { getState }) => {
             const state = getState() as RootState;
-            return !state.user.pendingActions.equipSkin;
+            if (state.user.pendingActions.equipSkin) {
+                toast.info('Подождите, предыдущая операция еще выполняется...');
+                return false;
+            }
+            return true;
         }
     }
 );
@@ -1010,6 +1019,17 @@ const userSlice = createSlice({
               state.gradeGroup = localStorage.getItem(`motiva_grade_group_${email}`) 
                   || gradeToGroup(action.payload.user.grade || 7);
           }
+          
+          // ИСПРАВЛЕНИЕ: Подхватить кэшированный аватар если бэк вернул дефолтный
+          const cachedAvatar = localStorage.getItem('motiva_avatar_cache');
+          if (cachedAvatar && state.currentUser) {
+              const backendAvatar = state.currentUser.avatar;
+              // Если бэкенд вернул дефолтный, а в кэше есть купленный — использовать кэш
+              if (!backendAvatar || backendAvatar === 'warrior') {
+                  state.currentUser.avatar = cachedAvatar;
+              }
+          }
+
           state.nextRegenTime = Date.now() + 60 * 1000;
       })
       .addCase(logoutLocal.fulfilled, (state) => { state.currentUser = null; state.gradeGroup = null; })
@@ -1055,16 +1075,30 @@ const userSlice = createSlice({
               state.currentUser = { ...state.currentUser, ...action.payload };
           }
       })
-      .addCase(purchaseItemAction.pending, (state) => { state.pendingActions.purchase = true; })
-      .addCase(purchaseItemAction.fulfilled, (state, action) => {
-          state.pendingActions.purchase = false;
-          if (state.currentUser && action.payload) {
-              state.currentUser.coins -= action.payload.cost;
-              if (!state.currentUser.inventory) state.currentUser.inventory = [];
-              state.currentUser.inventory.push(action.payload.id);
+      .addCase(purchaseItemAction.pending, (state, action) => { 
+          state.pendingActions.purchase = true; 
+          // Optimistic update
+          if (state.currentUser) {
+              state.currentUser.coins -= action.meta.arg.cost;
+              if (action.meta.arg.type === 'skin') {
+                  state.currentUser.inventory = [...(state.currentUser.inventory || []), action.meta.arg.id];
+              }
           }
       })
-      .addCase(purchaseItemAction.rejected, (state) => { state.pendingActions.purchase = false; })
+      .addCase(purchaseItemAction.fulfilled, (state, action) => {
+          state.pendingActions.purchase = false;
+          // State already updated optimistically
+      })
+      .addCase(purchaseItemAction.rejected, (state, action) => { 
+          state.pendingActions.purchase = false; 
+          // Revert optimistic update
+          if (state.currentUser) {
+              state.currentUser.coins += action.meta.arg.cost;
+              if (action.meta.arg.type === 'skin') {
+                  state.currentUser.inventory = state.currentUser.inventory?.filter(id => id !== action.meta.arg.id) || [];
+              }
+          }
+      })
 
       .addCase(submitDailyMood.pending, (state) => { state.pendingActions.setMood = true; })
       .addCase(submitDailyMood.fulfilled, (state, action) => {

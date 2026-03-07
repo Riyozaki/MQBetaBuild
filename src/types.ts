@@ -9,7 +9,23 @@ export type TaskType =
   | 'ordering'         
   | 'matching'
   | 'drag_to_image'
-  | 'fill_blanks';
+  | 'fill_blanks'
+  | 'dragDrop'
+  | 'crossword'
+  | 'cloze'
+  | 'trueFalse'
+  | 'timeline'
+  | 'findError'
+  | 'speech'
+  | 'draw';
+
+export interface HintSystem {
+  enabled: boolean;
+  maxHints: number;
+  hintCost: number;
+  xpPenalty: number;
+  hints: string[];
+}
 
 export interface Task {
   id: number | string;
@@ -47,8 +63,41 @@ export interface Task {
   textWithBlanks?: string; // "The capital of France is ___"
   blankAnswers?: string[]; // ["Paris"]
   
+  // DragDrop
+  zones?: { id: string; label: string }[];
+  items?: { id: string; text: string; correctZone: string }[];
+
+  // Crossword
+  grid?: string[][];
+  clues?: { direction: 'across' | 'down'; number: number; clue: string; answer: string; startRow: number; startCol: number; }[];
+
+  // Cloze
+  clozeText?: string;
+  clozeBlanks?: { id: string; answer: string; alternatives?: string[] }[];
+
+  // TrueFalse
+  statements?: { text: string; isTrue: boolean; explanation: string; }[];
+
+  // Timeline
+  events?: { text: string; year: number }[];
+
+  // FindError
+  errorText?: string;
+  errors?: { startIndex: number; endIndex: number; correction: string }[];
+
+  // Speech
+  speechPrompt?: string;
+  expectedText?: string;
+  language?: 'en' | 'ru';
+
+  // Draw
+  drawPrompt?: string;
+  referenceImage?: string;
+  checkPoints?: { x: number; y: number; tolerance: number }[];
+
   // General
   hint?: string;
+  hintSystem?: HintSystem;
   explanation?: string;
   xpBonus?: number;
   
@@ -273,6 +322,17 @@ export interface GuildLevelInfo {
   nextLevelXp: number | null;
 }
 
+export interface GuildJoinRequest {
+  id: string;
+  userEmail: string;
+  username: string;
+  level: number;
+  avatar: string;
+  message?: string;
+  createdAt: string;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
 export interface GuildData {
   guildId: string;
   name: string;
@@ -293,6 +353,7 @@ export interface GuildData {
     isOpen: boolean;
     [key: string]: any;
   };
+  joinRequests?: GuildJoinRequest[];
 }
 
 export interface GuildSummary {
@@ -329,4 +390,69 @@ export interface GuildMessage {
   message: string;
   messageType: 'text' | 'system' | 'achievement';
   createdAt: string;
+}
+
+export interface GuildRaid {
+  id: string;
+  name: string;
+  description: string;
+  bossHp: number;
+  currentDamage: number;
+  requiredParticipants: number;
+  currentParticipants: string[];
+  rewards: {
+      xp: number;
+      coins: number;
+      item?: string;
+  };
+  expiresAt: string;
+  status: 'active' | 'completed' | 'failed';
+}
+
+export interface GuildSeason {
+  seasonId: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  guildRankings: {
+      guildId: string;
+      guildName: string;
+      seasonXp: number;
+      rank: number;
+  }[];
+  rewards: {
+      top1: { coins: number; title: string };
+      top3: { coins: number; title: string };
+      top10: { coins: number; title: string };
+  };
+}
+
+export interface GuildAchievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  condition: {
+      type: 'total_quests' | 'total_xp' | 'members' | 'treasury' | 'raid_wins';
+      threshold: number;
+  };
+  reward: { guildXp: number; treasuryBonus?: number };
+  unlockedAt?: string;
+}
+
+export interface GuildPublicInfo {
+  guildId: string;
+  name: string;
+  description: string;
+  emblem: string;
+  level: number;
+  levelName: string;
+  totalXp: number;
+  reputation: number;
+  memberCount: number;
+  maxMembers: number;
+  isOpen: boolean;
+  createdAt: string;
+  members: { username: string; level: number; role: GuildRole; avatar?: string }[];
+  achievements: GuildAchievement[];
 }

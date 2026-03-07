@@ -1,4 +1,4 @@
-import { UserProfile, GuildData, GuildSummary, GuildLeaderboardEntry, GuildMessage } from '../types';
+import { UserProfile, GuildData, GuildSummary, GuildLeaderboardEntry, GuildMessage, GuildPublicInfo } from '../types';
 
 let storeRef: any = null;
 
@@ -124,6 +124,8 @@ export interface UpdateProfilePayload {
     currentLocation?: string;
     selectedTheme?: string;
     tutorialCompleted?: boolean;
+    avatar?: string;
+    visitorAvatar?: string;
 }
 
 // v3: Результат с кодом ошибки
@@ -567,6 +569,10 @@ export const api = {
         return await request<{success: true, data: GuildSummary[]}>('getGuildsList', {}, 'GET');
     },
 
+    getGuildPublicInfo: async (guildId: string) => {
+        return await request<{success: true, data: GuildPublicInfo}>('getGuildPublicInfo', { guildId }, 'GET');
+    },
+
     getGuildLeaderboard: async () => {
         return await request<{success: true, data: GuildLeaderboardEntry[]}>('getGuildLeaderboard', {}, 'GET');
     },
@@ -581,6 +587,14 @@ export const api = {
 
     joinGuild: async (email: string, guildId: string) => {
         return await request<{success: true, message: string}>('joinGuild', { email, guildId });
+    },
+
+    requestJoinGuild: async (email: string, guildId: string, message?: string) => {
+        return await request<{success: true, message: string}>('requestJoinGuild', { email, guildId, message });
+    },
+
+    handleJoinRequest: async (email: string, requestId: string, action: 'accept' | 'reject') => {
+        return await request<{success: true, message: string}>('handleJoinRequest', { email, requestId, action });
     },
 
     leaveGuild: async (email: string) => {
