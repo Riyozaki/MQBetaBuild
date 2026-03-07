@@ -1,11 +1,57 @@
-<div align="center">
+# MotivaQuest 🛡️
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Веб-приложение для геймификации повседневных задач и обучения подростков. Превращает скучные дела в увлекательные квесты с наградами, уровнями и социальным взаимодействием.
 
-  <h1>Built with AI Studio</h2>
+## 🚀 Функциональность
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- **Геймификация**: Система уровней, XP и золота.
+- **Квесты**: Ежедневные, сюжетные и групповые задания.
+- **Магазин наград**: Покупка скинов и реальных наград (пицца, игры) за виртуальную валюту.
+- **Социальное**: Таблица лидеров и групповые чаты.
+- **Админка**: Панель для учителей/родителей для отслеживания прогресса (защищено ролью).
+- **Этика**: Контроль игрового времени (сессии по 1 часу) и родительское согласие.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 🛠 Технологии
 
-</div>
+- **Frontend**: React, TypeScript, Redux Toolkit, Vite.
+- **UI**: Tailwind CSS, Framer Motion, Lucide Icons.
+- **Backend**: Google Apps Script & Google Sheets (API v3).
+- **Charts**: Chart.js.
+
+## 📦 Установка и Запуск
+
+1.  **Клонирование репозитория**
+    ```bash
+    git clone https://github.com/your-username/motivaquest.git
+    cd motivaquest
+    ```
+
+2.  **Установка зависимостей**
+    ```bash
+    npm install
+    ```
+
+3.  **Настройка окружения**
+    *   Создайте файл `.env` на основе `.env.example`.
+    *   Укажите `VITE_API_URL` (URL вашего Google Apps Script деплоя).
+
+4.  **Запуск**
+    ```bash
+    npm run dev
+    ```
+    Приложение будет доступно по адресу `http://localhost:3000`.
+
+## 👨‍🏫 Вход для Администратора
+
+Чтобы протестировать админ-панель:
+1. Зарегистрируйте пользователя с email, содержащим слово `admin` (например, `admin@school.com`), или измените роль пользователя вручную в Google Sheets.
+2. Перейдите по ссылке `/admin` в меню навигации.
+
+## 📄 Структура Проекта
+
+*   `/components` - Переиспользуемые UI компоненты (Navbar, Modals).
+*   `/pages` - Основные страницы (Home, Quests, Profile...).
+*   `/store` - Redux слайсы для управления состоянием.
+*   `/context` - React Context (Auth, Theme).
+*   `/types` - TypeScript интерфейсы.
+*   `/services` - API и аналитика.
