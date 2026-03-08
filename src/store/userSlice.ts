@@ -725,7 +725,7 @@ export const submitDailyMood = createAsyncThunk(
 
 export const startQuestAction = createAsyncThunk(
     'user/startQuest',
-    async (questId: number, { getState }) => {
+    async (questId: string | number, { getState }) => {
         const state = getState() as RootState;
         const user = state.user.currentUser;
         if (!user || !user.email) return;

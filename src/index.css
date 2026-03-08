@@ -1,1 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+  --color-primary-950: var(--color-primary-950);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200;
+    background-color: #0f172a;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(30, 27, 75, 0.8) 0%, rgba(2, 6, 23, 0.95) 70%),
+      url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=2000&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-slate-900/60 backdrop-blur-md border border-slate-700/50 shadow-xl;
+  }
+  
+  .rpg-font {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+  }
+  
+  .rpg-border {
+    @apply border-2 border-slate-700/50 relative;
+  }
+  
+  .rpg-border::before, .rpg-border::after {
+    content: '';
+    @apply absolute w-2 h-2 border-amber-500/50;
+  }
+  
+  .rpg-border::before {
+    @apply top-0 left-0 border-t-2 border-l-2;
+  }
+  
+  .rpg-border::after {
+    @apply bottom-0 right-0 border-b-2 border-r-2;
+  }
+
+  .corner-accent {
+    @apply absolute w-3 h-3 border-amber-500/40 z-20;
+  }
+  .corner-tl { @apply top-0 left-0 border-t-2 border-l-2; }
+  .corner-tr { @apply top-0 right-0 border-t-2 border-r-2; }
+  .corner-bl { @apply bottom-0 left-0 border-b-2 border-l-2; }
+  .corner-br { @apply bottom-0 right-0 border-b-2 border-r-2; }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

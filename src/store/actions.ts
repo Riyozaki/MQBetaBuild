@@ -34,8 +34,8 @@ const getMinMinutes = (rarity: QuestRarity): number => {
 const mapRawQuest = (q: any): Quest => {
     // Only specific IDs are treated as recurring Habits
     // 55: Зарядка, 65: Уборка, 69: Режим сна
-    const HABIT_IDS = [55, 65, 69];
-    const isHabit = HABIT_IDS.includes(Number(q.id));
+    const HABIT_IDS = ["default_055", "default_065", "default_069"];
+    const isHabit = HABIT_IDS.includes(String(q.id));
     
     // Auto-assign difficulty based on rarity
     let difficulty = q.difficulty;
@@ -64,10 +64,15 @@ const mapRawQuest = (q: any): Quest => {
     // Ensure tasks exist
     let tasks = q.tasks;
     if (!tasks) {
-        tasks = getTasksForQuest(q.id);
+        tasks = getTasksForQuest(String(q.id));
     }
     
+    let disabled = false;
     if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
+        if (String(q.id).startsWith('grade')) {
+            console.warn(`[Quest Warning] Grade quest ${q.id} has no tasks. Disabling.`);
+            disabled = true;
+        }
         tasks = [{
             id: 1,
             type: 'yes_no',
@@ -75,6 +80,17 @@ const mapRawQuest = (q: any): Quest => {
             correctAnswer: "yes",
             xpBonus: 0
         }];
+    } else {
+        // Randomize correctIndex for quiz tasks
+        tasks = tasks.map((task: any) => {
+            if (task.type === 'quiz' && task.options && task.correctIndex !== undefined) {
+                const correctOption = task.options[task.correctIndex];
+                const shuffledOptions = [...task.options].sort(() => Math.random() - 0.5);
+                const newCorrectIndex = shuffledOptions.indexOf(correctOption);
+                return { ...task, options: shuffledOptions, correctIndex: newCorrectIndex };
+            }
+            return task;
+        });
     }
 
     return {
@@ -88,7 +104,8 @@ const mapRawQuest = (q: any): Quest => {
         rarity: rarity as QuestRarity,
         xp,
         coins,
-        tasks
+        tasks,
+        disabled
     };
 };
 
