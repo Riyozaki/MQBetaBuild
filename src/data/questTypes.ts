@@ -77,6 +77,8 @@ export const getHeroTitle = (grade: number): string => {
 
 export const CATEGORY_TRANSLATIONS: Record<string, { label: string; icon: string }> = {
     math: { label: 'Математика', icon: '🔢' },
+    algebra: { label: 'Алгебра', icon: '📐' },
+    geometry: { label: 'Геометрия', icon: '📏' },
     russian: { label: 'Русский язык', icon: '📝' },
     literature: { label: 'Литература', icon: '📚' },
     english: { label: 'Английский', icon: '🇬🇧' },
@@ -86,11 +88,13 @@ export const CATEGORY_TRANSLATIONS: Record<string, { label: string; icon: string
     physics: { label: 'Физика', icon: '⚡' },
     chemistry: { label: 'Химия', icon: '🧪' },
     social: { label: 'Общество', icon: '🤝' },
+    social_studies: { label: 'Обществознание', icon: '⚖️' },
     sport: { label: 'Спорт', icon: '💪' },
     art: { label: 'Искусство', icon: '🎨' },
     music: { label: 'Музыка', icon: '🎵' },
     tech: { label: 'Технологии', icon: '💻' },
     it: { label: 'IT / Информатика', icon: '💻' },
+    cs: { label: 'Информатика', icon: '💻' },
     finance: { label: 'Финансы', icon: '💰' },
     ecology: { label: 'Экология', icon: '🌱' },
     self: { label: 'Саморазвитие', icon: '✨' },

@@ -25,20 +25,9 @@ const textInput = (question: string, answer: string, extra?: any) => ({
 const timer = (question: string, answer: string, seconds: number, extra?: any) => ({
   id: nextId(), type: 'timer_challenge' as const, question, correctAnswer: answer, timerSeconds: seconds, ...(extra || {}),
 });
-const ordering = (question: string, correctOrder: string[], extra?: any) => {
-  let shuffledItems = shuffleArray(correctOrder);
-  // Ensure it's not the same as correct order (if length > 1)
-  if (correctOrder.length > 1) {
-      let attempts = 0;
-      while (JSON.stringify(shuffledItems) === JSON.stringify(correctOrder) && attempts < 5) {
-          shuffledItems = shuffleArray(correctOrder);
-          attempts++;
-      }
-  }
-  return {
-    id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems, ...(extra || {}),
-  };
-};
+const ordering = (question: string, correctOrder: string[], extra?: any) => ({
+  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: correctOrder, ...(extra || {}),
+});
 const matching = (question: string, pairs: { left: string; right: string }[], extra?: any) => ({
   id: nextId(), type: 'matching' as const, question, pairs, ...(extra || {}),
 });
@@ -141,7 +130,7 @@ export const grade5QuestTasksMap: Record<string, any[]> = {
 
   // 010 — Числовой детектив
   grade5_010: [
-    checklist("Создание книги математических загадок:", [
+    checklist("Создание книги загадок:", [
       "Придумать 10 загадок-историй",
       "Написать условие каждой задачи",
       "Добавить иллюстрации",
@@ -149,6 +138,13 @@ export const grade5QuestTasksMap: Record<string, any[]> = {
       "Оформить обложку",
     ]),
     quiz("2, 6, 18, 54 — какая закономерность?", ["Умножение на 3", "Прибавление 4", "Умножение на 2", "Прибавление 12"], 0),
+    numInput("Продолжи: 1, 4, 9, 16, 25, ?", "36"),
+    matching("Типы последовательностей", [
+      { left: "2, 4, 6, 8", right: "Арифметическая (+2)" },
+      { left: "3, 9, 27, 81", right: "Геометрическая (×3)" },
+      { left: "1, 1, 2, 3, 5", right: "Фибоначчи" },
+    ]),
+    timer("Какое число: 100, 50, 25, ?", "12.5", 15),
   ],
 
   // ═══════════════════════════════════════════════════
@@ -270,10 +266,16 @@ export const grade5QuestTasksMap: Record<string, any[]> = {
       "Выбрать 50 сложных слов",
       "Написать толкование каждого",
       "Добавить пример в предложении",
-      "Нарисовать иллюстрацию к каждому слову",
+      "Нарисовать иллюстрацию",
       "Оформить обложку и содержание",
     ]),
     quiz("Словарная статья включает:", ["Слово, значение, пример", "Только слово", "Только перевод", "Только картинку"], 0),
+    matching("Типы словарей", [
+      { left: "Толковый", right: "Объясняет значение слов" },
+      { left: "Орфографический", right: "Правильное написание" },
+      { left: "Фразеологический", right: "Устойчивые выражения" },
+    ]),
+    quiz("Многозначное слово — это:", ["Слово с несколькими значениями", "Очень длинное слово", "Слово из другого языка", "Слово без значения"], 0),
   ],
 
   // ═══════════════════════════════════════════════════
@@ -402,6 +404,12 @@ export const grade5QuestTasksMap: Record<string, any[]> = {
       "Проверить орфографию",
     ]),
     quiz("Фанфик — это:", ["Фанатское продолжение произведения", "Критическая статья", "Биография автора", "Словарь"], 0),
+    matching("Элементы сюжета", [
+      { left: "Завязка", right: "Начало конфликта" },
+      { left: "Кульминация", right: "Самый напряжённый момент" },
+      { left: "Развязка", right: "Разрешение конфликта" },
+    ]),
+    quiz("Чтобы герой был убедительным, нужно:", ["Показать его мысли, чувства и поступки", "Только описать внешность", "Дать ему суперсилу", "Скопировать из другой книги"], 0),
   ],
 
   // ═══════════════════════════════════════════════════
@@ -782,6 +790,12 @@ export const grade5QuestTasksMap: Record<string, any[]> = {
       "Оформить обложку",
     ]),
     quiz("Атлас — это:", ["Сборник географических карт", "Один большой глобус", "Книга о мифах", "Словарь"], 0),
+    matching("Столицы мира", [
+      { left: "Франция", right: "Париж" },
+      { left: "Япония", right: "Токио" },
+      { left: "Австралия", right: "Канберра" },
+    ]),
+    quiz("Самый большой материк на Земле:", ["Евразия", "Африка", "Северная Америка", "Антарктида"], 0),
   ],
 
   // ═══════════════════════════════════════════════════

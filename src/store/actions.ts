@@ -82,14 +82,23 @@ const mapRawQuest = (q: any): Quest => {
         }];
     } else {
         // Randomize correctIndex for quiz tasks
-        tasks = tasks.map((task: any) => {
-            if (task.type === 'quiz' && task.options && task.correctIndex !== undefined) {
-                const correctOption = task.options[task.correctIndex];
-                const shuffledOptions = [...task.options].sort(() => Math.random() - 0.5);
-                const newCorrectIndex = shuffledOptions.indexOf(correctOption);
-                return { ...task, options: shuffledOptions, correctIndex: newCorrectIndex };
+        tasks = tasks.map((task: any, index: number) => {
+            let updatedTask = { ...task };
+            if (!updatedTask.id) {
+                updatedTask.id = `${q.id}_task_${index}`;
             }
-            return task;
+            if (updatedTask.type === 'quiz' && updatedTask.options && updatedTask.correctIndex !== undefined) {
+                const correctOption = updatedTask.options[updatedTask.correctIndex];
+                const shuffledOptions = [...updatedTask.options].sort(() => Math.random() - 0.5);
+                const newCorrectIndex = shuffledOptions.indexOf(correctOption);
+                updatedTask = { ...updatedTask, options: shuffledOptions, correctIndex: newCorrectIndex };
+            }
+            // Также перемешиваем ordering tasks в рантайме
+            if (updatedTask.type === 'ordering' && updatedTask.shuffledItems) {
+                const shuffled = [...updatedTask.shuffledItems].sort(() => Math.random() - 0.5);
+                updatedTask = { ...updatedTask, shuffledItems: shuffled };
+            }
+            return updatedTask;
         });
     }
 

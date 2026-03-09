@@ -1,7 +1,7 @@
 // Интерактивные задания для квестов 8-9 класса
 
 let _id = 0;
-const nextId = () => ++_id;
+const nextId = () => `g89_${++_id}`;
 
 const quiz = (question: string, options: string[], correctIndex: number, extra?: any) => ({
   id: nextId(), type: 'quiz' as const, question, options, correctIndex, ...(extra || {}),
@@ -16,7 +16,7 @@ const timer = (question: string, answer: string, seconds: number, extra?: any) =
   id: nextId(), type: 'timer_challenge' as const, question, correctAnswer: answer, timerSeconds: seconds, ...(extra || {}),
 });
 const ordering = (question: string, correctOrder: string[], extra?: any) => ({
-  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: [...correctOrder].sort(() => Math.random() - 0.5), ...(extra || {}),
+  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: correctOrder, ...(extra || {}),
 });
 const matching = (question: string, pairs: { left: string; right: string }[], extra?: any) => ({
   id: nextId(), type: 'matching' as const, question, pairs, ...(extra || {}),
@@ -125,6 +125,11 @@ export const grade89QuestTasksMap: Record<string, any[]> = {
     ]),
     quiz("Какой метод доказательства использует «от противного»?", ["Доказательство от противного", "Индукция", "Дедукция", "Аналогия"], 0),
     textInput("Напишите формулу дискриминанта квадратного уравнения", "b^2-4ac", { acceptableAnswers: ["b^2-4ac", "b²-4ac", "D=b^2-4ac", "D=b²-4ac", "b2-4ac"] }),
+    matching("Методы доказательства", [
+      { left: "Индукция", right: "От частного к общему" },
+      { left: "Дедукция", right: "От общего к частному" },
+      { left: "От противного", right: "Предполагаем обратное" },
+    ]),
   ],
 
   // ═══════════════════════════════════════════════════

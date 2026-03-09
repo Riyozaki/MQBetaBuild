@@ -1,7 +1,7 @@
 // Интерактивные задания для квестов 6-7 класса
 
 let _id = 0;
-const nextId = () => ++_id;
+const nextId = () => `g67_${++_id}`;
 
 const quiz = (question: string, options: string[], correctIndex: number, extra?: any) => ({
   id: nextId(), type: 'quiz' as const, question, options, correctIndex, ...(extra || {}),
@@ -16,7 +16,7 @@ const timer = (question: string, answer: string, seconds: number, extra?: any) =
   id: nextId(), type: 'timer_challenge' as const, question, correctAnswer: answer, timerSeconds: seconds, ...(extra || {}),
 });
 const ordering = (question: string, correctOrder: string[], extra?: any) => ({
-  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: [...correctOrder].sort(() => Math.random() - 0.5), ...(extra || {}),
+  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: correctOrder, ...(extra || {}),
 });
 const matching = (question: string, pairs: { left: string; right: string }[], extra?: any) => ({
   id: nextId(), type: 'matching' as const, question, pairs, ...(extra || {}),
@@ -136,6 +136,11 @@ export const grade67QuestTasksMap: Record<string, any[]> = {
     numInput("Сколько двузначных чисел делятся на 7?", "13"),
     timer("Найди: 111 × 111 = ?", "12321", 30),
     numInput("В классе 30 учеников. 20 любят футбол, 15 — баскетбол, 8 — оба. Сколько не любят ни то, ни другое?", "3"),
+    matching("Круги Эйлера", [
+      { left: "Любят только футбол", right: "20 - 8 = 12" },
+      { left: "Любят только баскетбол", right: "15 - 8 = 7" },
+      { left: "Любят хотя бы один спорт", right: "12 + 7 + 8 = 27" },
+    ]),
   ],
 
   // ═══════════════════════════════════════════════════
@@ -263,6 +268,12 @@ export const grade67QuestTasksMap: Record<string, any[]> = {
       "Использование диалогов и описаний",
     ]),
     quiz("Кульминация — это:", ["Момент наивысшего напряжения", "Начало рассказа", "Конец рассказа", "Описание героя"], 0),
+    matching("Элементы сюжета", [
+      { left: "Завязка", right: "Знакомство с проблемой" },
+      { left: "Кульминация", right: "Пик напряжения" },
+      { left: "Развязка", right: "Итог истории" },
+    ]),
+    quiz("Что делает диалог живым?", ["Речевые особенности персонажа", "Длинные сложные предложения", "Отсутствие эмоций"], 0),
   ],
 
   // ═══════════════════════════════════════════════════

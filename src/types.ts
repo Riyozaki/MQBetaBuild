@@ -131,6 +131,7 @@ export interface Quest {
   tasks: Task[];
   type: 'daily' | 'story' | 'quest'; 
   isHabit?: boolean; // New: Distinguishes routine tasks from random challenges
+  disabled?: boolean;
   gradeRange?: [number, number]; 
   gradeGroup?: GradeGroup;
   minMinutes: number; 

@@ -34,12 +34,13 @@ const questsData = [
         t('timer_challenge', "7 × 8 = ?", "56", { timerSeconds: 15 }),
         t('timer_challenge', "7 × 9 = ?", "63", { timerSeconds: 15 })
     ]},
-    { id: "default_055", title: "Спорт: Зарядка", description: "Разминка утром", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Common", xp: 15, coins: 10, tasks: [
-        t('checklist', "Утро", "", { checklistItems: [{id:'1', label: '10 приседаний'}, {id:'2', label: 'Потягивания'}]}),
-        t('yes_no', "Бодрость есть?", "yes")
+    { id: "default_055", title: "Спорт: Зарядка", description: "Разминка утром", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Common", xp: 10, coins: 5, tasks: [
+        t('checklist', "Утро", "", { checklistItems: [{id:'1', label: '10 приседаний'}, {id:'2', label: 'Потягивания'}, {id:'3', label: '10 наклонов'}]}),
+        t('quiz', "Зачем делать разминку?", "", { options: ["Разогреть мышцы и суставы", "Чтобы устать до уроков", "Это необязательно"], correctIndex: 0 })
     ]},
-    { id: "default_065", title: "Уборка: Рабочий стол", description: "Порядок в вещах", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Common", xp: 20, coins: 15, tasks: [
-        t('checklist', "Стол", "", { checklistItems: [{id:'1', label: 'Убрал мусор'}, {id:'2', label: 'Сложил ручки'}, {id:'3', label: 'Протер пыль'}]})
+    { id: "default_065", title: "Уборка", description: "Наведи порядок", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Common", xp: 10, coins: 5, tasks: [
+        t('checklist', "Порядок", "", { checklistItems: [{id:'1', label: 'Убрал рабочий стол'}, {id:'2', label: 'Разложил вещи по местам'}, {id:'3', label: 'Протёр пыль'}]}),
+        t('quiz', "Метод 5S (порядок на рабочем месте) начинается с:", "", { options: ["Сортировки — убрать лишнее", "Покупки новых полок", "Уборки раз в месяц"], correctIndex: 0 })
     ]},
 
     // --- DAY 2: DISCIPLINE ---
@@ -77,9 +78,10 @@ const questsData = [
         t('quiz', "Правильное ударение?", "", { options: ["тОрты", "тортЫ"], correctIndex: 0 }),
         t('quiz', "Правильное ударение?", "", { options: ["красИвее", "красивЕе"], correctIndex: 0 })
     ]},
-    { id: "default_067", title: "Скорочтение", description: "Работа с текстом", category: "literature", categoryLabel: "Литература", categoryIcon: "📚", rarity: "Epic", xp: 40, coins: 30, tasks: [
-        t('timer_challenge', "Прочитай стр. книги за 2 мин", "готово", { timerSeconds: 120, acceptableAnswers: ["готово", "да", "сделал"] }),
-        t('text_input', "О чем была страница (кратко)?", "*", {})
+    { id: "default_067", title: "Скорочтение", description: "Работа с текстом", category: "literature", categoryLabel: "Литература", categoryIcon: "📚", rarity: "Rare", xp: 30, coins: 20, tasks: [
+        t('timer_challenge', "Прочитай 1 страницу книги за 2 минуты", "готово", { timerSeconds: 120, acceptableAnswers: ["готово", "да", "сделал"] }),
+        t('quiz', "Что помогает запомнить прочитанное?", "", { options: ["Пересказ своими словами", "Читать как можно быстрее", "Пропускать сложные слова"], correctIndex: 0 }),
+        t('quiz', "Главная мысль текста — это:", "", { options: ["Основная идея, которую хотел донести автор", "Первое предложение", "Последнее слово"], correctIndex: 0 })
     ]},
 
     // --- DAY 5: SCIENCE ---
@@ -102,8 +104,10 @@ const questsData = [
         t('quiz', "Сила притяжения Земли - это...", "", { options: ["Трение", "Гравитация", "Инерция"], correctIndex: 1 }),
         t('yes_no', "1кг ваты весит БОЛЬШЕ чем 1кг железа. Верно?", "no")
     ]},
-    { id: "default_058", title: "Выносливость: Планка", description: "Укрепи кор", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Rare", xp: 35, coins: 25, tasks: [
-        t('timer_challenge', "Стой в планке!", "да", { timerSeconds: 45, acceptableAnswers: ["да", "сделал", "готово"] })
+    { id: "default_058", title: "Выносливость: Планка", description: "Укрепи кор", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Common", xp: 20, coins: 15, tasks: [
+        t('timer_challenge', "Стой в планке!", "да", { timerSeconds: 45, acceptableAnswers: ["да", "сделал", "готово"] }),
+        t('quiz', "Какие мышцы работают в планке?", "", { options: ["Пресс, спина, плечи", "Только бицепсы", "Только ноги"], correctIndex: 0 }),
+        t('quiz', "Как правильно стоять в планке?", "", { options: ["Тело ровное как доска", "Провисать животом", "Поднять таз высоко"], correctIndex: 0 })
     ]},
     { id: "default_005", title: "Уравнения: Найти X", description: "Реши линейные уравнения", category: "math", categoryLabel: "Математика", categoryIcon: "🔢", rarity: "Epic", xp: 50, coins: 40, tasks: [
         t('timer_challenge', "2x + 10 = 20. x=?", "5", { timerSeconds: 30 }),
@@ -125,17 +129,25 @@ const questsData = [
     ]},
 
     // --- DAY 8: MULTITASKING ---
-    { id: "default_059", title: "Координация: Берпи", description: "Сложное упражнение", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Epic", xp: 45, coins: 30, tasks: [
-        t('timer_challenge', "Сделай 5 берпи", "да", { timerSeconds: 40, acceptableAnswers: ["да", "готово"] }),
-        t('yes_no', "Пульс участился?", "yes")
+    { id: "default_059", title: "Координация: Берпи", description: "Сложное упражнение", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Rare", xp: 30, coins: 20, tasks: [
+        t('timer_challenge', "Сделай 5 берпи", "да", { timerSeconds: 60, acceptableAnswers: ["да", "готово", "сделал"] }),
+        t('quiz', "Берпи тренирует:", "", { options: ["Выносливость и координацию", "Только гибкость", "Только зрение"], correctIndex: 0 }),
+        t('quiz', "Нормальный пульс в покое у подростка:", "", { options: ["60-100 уд/мин", "20-30 уд/мин", "200+ уд/мин"], correctIndex: 0 }),
+        t('matching', "Упражнения и качества", "", { pairs: [{left: 'Планка', right: 'Сила кора'}, {left: 'Бег', right: 'Выносливость'}, {left: 'Растяжка', right: 'Гибкость'}] })
     ]},
     { id: "default_012", title: "Тся/Ться", description: "Мягкий знак в глаголах", category: "russian", categoryLabel: "Русский язык", categoryIcon: "📝", rarity: "Rare", xp: 30, coins: 20, tasks: [
         t('quiz', "Он (что делает?)", "", { options: ["Учится", "Учиться"], correctIndex: 0 }),
         t('quiz', "Надо (что делать?)", "", { options: ["Учиться", "Учится"], correctIndex: 0 })
     ]},
-    { id: "default_068", title: "Планирование", description: "Матрица Эйзенхауэра", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Epic", xp: 40, coins: 35, tasks: [
-        t('quiz', "Срочное и Важное - это...", "", { options: ["Сделать сейчас", "Делегировать", "Отложить"], correctIndex: 0 }),
-        t('quiz', "Не срочное, но Важное - это...", "", { options: ["Запланировать", "Удалить", "Сделать сейчас"], correctIndex: 0 })
+    { id: "default_068", title: "Планирование", description: "Матрица Эйзенхауэра", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Rare", xp: 35, coins: 25, tasks: [
+        t('quiz', "Срочное и Важное — это...", "", { options: ["Сделать сейчас", "Делегировать", "Отложить", "Удалить"], correctIndex: 0 }),
+        t('quiz', "Не срочное, но Важное — это...", "", { options: ["Запланировать", "Удалить", "Сделать сейчас", "Игнорировать"], correctIndex: 0 }),
+        t('matching', "Матрица Эйзенхауэра", "", { pairs: [
+            {left: 'Подготовка к экзамену завтра', right: 'Срочно + Важно'},
+            {left: 'Чтение полезной книги', right: 'Не срочно + Важно'},
+            {left: 'Бесцельный скроллинг', right: 'Не срочно + Не важно'}
+        ]}),
+        t('quiz', "Кто придумал эту матрицу?", "", { options: ["Дуайт Эйзенхауэр", "Стив Джобс", "Илон Маск", "Альберт Эйнштейн"], correctIndex: 0 })
     ]},
 
     // --- DAY 9: HISTORY ---
@@ -147,7 +159,9 @@ const questsData = [
         t('number_input', "В каком году Гагарин полетел в космос?", "1961", {})
     ]},
     { id: "default_069", title: "Режим сна", description: "Ложись вовремя", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Common", xp: 15, coins: 10, tasks: [
-        t('checklist', "Сон", "", { checklistItems: [{id:'1', label: 'Убрал телефон за час'}, {id:'2', label: 'Проветрил комнату'}, {id:'3', label: 'Лег до 23:00'}]})
+        t('checklist', "Сон", "", { checklistItems: [{id:'1', label: 'Убрал телефон за час'}, {id:'2', label: 'Проветрил комнату'}, {id:'3', label: 'Лёг до 23:00'}]}),
+        t('quiz', "Сколько часов сна нужно подростку?", "", { options: ["8-10 часов", "4-5 часов", "12+ часов"], correctIndex: 0 }),
+        t('quiz', "Почему синий свет экрана мешает сну?", "", { options: ["Подавляет выработку мелатонина", "Нагревает глаза", "Никак не влияет"], correctIndex: 0 })
     ]},
 
     // --- DAY 10: LITERATURE ---
@@ -160,15 +174,21 @@ const questsData = [
         t('quiz', "Мой дЯдя сАмых чЕстных прАвил...", "", { options: ["Ямб", "Дактиль", "Хорей"], correctIndex: 0 })
     ]},
     { id: "default_076", title: "Ораторское искусство", description: "Речь и дикция", category: "literature", categoryLabel: "Литература", categoryIcon: "📚", rarity: "Rare", xp: 30, coins: 20, tasks: [
-        t('timer_challenge', "Скажи скороговорку: 'Шла Саша по шоссе' 3 раза", "да", { timerSeconds: 15, acceptableAnswers: ["да", "готово"] }),
-        t('yes_no', "Получилось без запинки?", "yes")
+        t('timer_challenge', "Скажи скороговорку: 'Шла Саша по шоссе' 3 раза без запинки", "да", { timerSeconds: 20, acceptableAnswers: ["да", "готово"] }),
+        t('quiz', "Что такое дикция?", "", { options: ["Чёткое произношение звуков", "Громкость голоса", "Скорость речи"], correctIndex: 0 }),
+        t('matching', "Средства выразительности речи", "", { pairs: [{left: 'Интонация', right: 'Повышение/понижение голоса'}, {left: 'Пауза', right: 'Остановка для эффекта'}, {left: 'Жесты', right: 'Движения рук'}] })
     ]},
 
     // --- DAY 11: FINANCE ---
     { id: "default_087", title: "Бюджет Героя", description: "Доходы и расходы", category: "finance", categoryLabel: "Финансы", categoryIcon: "💰", rarity: "Rare", xp: 35, coins: 25, tasks: [
-        t('quiz', "Карманные деньги - это...", "", { options: ["Доход", "Расход"], correctIndex: 0 }),
-        t('quiz', "Покупка игры - это...", "", { options: ["Расход", "Инвестиция", "Доход"], correctIndex: 0 }),
-        t('number_input', "Было 500, потратил 150. Остаток?", "350", {})
+        t('quiz', "Карманные деньги — это...", "", { options: ["Доход", "Расход", "Кредит"], correctIndex: 0 }),
+        t('quiz', "Покупка игры — это...", "", { options: ["Расход", "Инвестиция", "Доход"], correctIndex: 0 }),
+        t('number_input', "Было 500₽, потратил 150₽. Остаток?", "350", {}),
+        t('matching', "Финансовая грамотность", "", { pairs: [
+            {left: 'Зарплата', right: 'Доход'},
+            {left: 'Аренда', right: 'Расход'},
+            {left: 'Вклад в банке', right: 'Сбережение'}
+        ]})
     ]},
     { id: "default_088", title: "Копилка", description: "Финансовая цель", category: "finance", categoryLabel: "Финансы", categoryIcon: "💰", rarity: "Common", xp: 20, coins: 15, tasks: [
         t('checklist', "Цель", "", { checklistItems: [{id:'1', label: 'Придумай цель накопления'}, {id:'2', label: 'Отложи 10% от имеющихся денег'}] })
@@ -200,7 +220,8 @@ const questsData = [
         t('quiz', "Кто здесь продуцент (производитель)?", "", { options: ["Трава", "Волк", "Гриб"], correctIndex: 0 })
     ]},
     { id: "default_060", title: "Спорт: Растяжка", description: "Гибкость", category: "sport", categoryLabel: "Спорт", categoryIcon: "💪", rarity: "Common", xp: 20, coins: 15, tasks: [
-        t('checklist', "Комплекс", "", { checklistItems: [{id:'1', label: 'Наклоны к полу (10 раз)'}, {id:'2', label: 'Тянем руки вверх'}] })
+        t('checklist', "Комплекс", "", { checklistItems: [{id:'1', label: 'Наклоны к полу (10 раз)'}, {id:'2', label: 'Тянем руки вверх'}, {id:'3', label: 'Повороты корпуса (10 раз)'}] }),
+        t('quiz', "Когда лучше делать растяжку?", "", { options: ["После разминки, на тёплые мышцы", "Утром сразу из кровати", "Не имеет значения"], correctIndex: 0 })
     ]},
 
     // --- DAY 13: IT & LOGIC ---
@@ -218,16 +239,42 @@ const questsData = [
     ]},
 
     // --- DAY 14: BOSS & FINAL ---
-    { id: "default_074", title: "Рефлексия", description: "Оглянись назад", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Rare", xp: 40, coins: 30, tasks: [
-        t('text_input', "Чему главному ты научился за 2 недели?", "*", {}),
-        t('yes_no', "Гордишься собой?", "yes")
+    { id: "default_074", title: "Рефлексия", description: "Оглянись назад", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Rare", xp: 35, coins: 25, tasks: [
+        t('quiz', "Рефлексия — это:", "", { options: ["Анализ своих действий и результатов", "Просто отдых", "Повторение уроков", "Чтение новостей"], correctIndex: 0 }),
+        t('matching', "Инструменты рефлексии", "", { pairs: [
+            {left: 'Дневник', right: 'Записывать мысли'},
+            {left: 'Таймлайн', right: 'Визуализировать прогресс'},
+            {left: 'SWOT-анализ', right: 'Сильные/слабые стороны'}
+        ]}),
+        t('ordering', "Цикл обучения Колба", "", { 
+            shuffledItems: ["Размышление", "Опыт", "Выводы", "Применение"], 
+            correctOrder: ["Опыт", "Размышление", "Выводы", "Применение"] 
+        }),
+        t('quiz', "Что полезнее всего после ошибки?", "", { options: ["Понять причину и сделать иначе", "Забыть и не думать", "Обвинить других", "Больше никогда не пробовать"], correctIndex: 0 })
     ]},
-    { id: "default_100", title: "Арт: Креатив", description: "Создание нового", category: "art", categoryLabel: "Искусство", categoryIcon: "🎨", rarity: "Epic", xp: 50, coins: 40, tasks: [
-        t('text_input', "Придумай девиз своего героя", "*", {})
+    { id: "default_100", title: "Арт: Креатив", description: "Мир искусства", category: "art", categoryLabel: "Искусство", categoryIcon: "🎨", rarity: "Rare", xp: 30, coins: 20, tasks: [
+        t('matching', "Цвета и настроение", "", { pairs: [
+            {left: 'Красный', right: 'Энергия, страсть'},
+            {left: 'Синий', right: 'Спокойствие, глубина'},
+            {left: 'Жёлтый', right: 'Радость, тепло'}
+        ]}),
+        t('quiz', "Три основных цвета (из которых можно смешать остальные):", "", { options: ["Красный, синий, жёлтый", "Чёрный, белый, серый", "Зелёный, оранжевый, фиолетовый"], correctIndex: 0 }),
+        t('quiz', "Что такое композиция в рисунке?", "", { options: ["Расположение элементов на листе", "Название картины", "Тип кисти"], correctIndex: 0 }),
+        t('quiz', "Какой цвет получится при смешении синего и жёлтого?", "", { options: ["Зелёный", "Оранжевый", "Фиолетовый", "Коричневый"], correctIndex: 0 })
     ]},
-    { id: "default_071", title: "План Будущего", description: "Что дальше?", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Legendary", xp: 100, coins: 100, tasks: [
-        t('checklist', "План", "", { checklistItems: [{id:'1', label: 'Выбрать новую цель'}, {id:'2', label: 'Не бросать привычки'}, {id:'3', label: 'Победить Босса'}] }),
-        t('text_input', "Напиши свою главную цель на следующий месяц", "*", {})
+    { id: "default_071", title: "План Будущего", description: "Целеполагание", category: "self", categoryLabel: "Саморазвитие", categoryIcon: "✨", rarity: "Epic", xp: 60, coins: 40, tasks: [
+        t('quiz', "SMART-цель должна быть:", "", { options: ["Конкретной, измеримой, достижимой, актуальной, ограниченной по времени", "Максимально амбициозной без плана", "Секретной от всех", "Только на один день"], correctIndex: 0 }),
+        t('ordering', "Шаги к цели", "", { 
+            shuffledItems: ["Определить цель", "Разбить на подзадачи", "Назначить сроки", "Начать выполнять", "Отслеживать прогресс"], 
+            correctOrder: ["Определить цель", "Разбить на подзадачи", "Назначить сроки", "Начать выполнять", "Отслеживать прогресс"] 
+        }),
+        t('matching', "Примеры SMART", "", { pairs: [
+            {left: 'Прочитать 2 книги за месяц', right: 'SMART-цель'},
+            {left: 'Стать умнее', right: 'Нечёткая цель'},
+            {left: 'Когда-нибудь выучить Python', right: 'Без дедлайна'}
+        ]}),
+        t('quiz', "Если цель кажется слишком большой, нужно:", "", { options: ["Разбить на маленькие шаги", "Отказаться от неё", "Ждать вдохновения", "Попросить кого-то сделать"], correctIndex: 0 }),
+        t('quiz', "Что делать если не удалось выполнить план?", "", { options: ["Проанализировать причину и скорректировать", "Бросить навсегда", "Обвинить обстоятельства", "Никому не говорить"], correctIndex: 0 })
     ]},
     
     // --- Additional Pool Quests ---

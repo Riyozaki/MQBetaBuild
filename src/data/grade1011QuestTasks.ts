@@ -2,7 +2,7 @@
 // Покрывает: Алгебру, Геометрию, Русский, Литературу, Историю, Химию, Физику, Биологию, Обществознание, Информатику
 
 let _id = 0;
-const nextId = () => ++_id;
+const nextId = () => `g1011_${++_id}`;
 
 const quiz = (question: string, options: string[], correctIndex: number, extra?: any) => ({
   id: nextId(), type: 'quiz' as const, question, options, correctIndex, ...(extra || {}),
@@ -17,7 +17,7 @@ const timer = (question: string, answer: string, seconds: number, extra?: any) =
   id: nextId(), type: 'timer_challenge' as const, question, correctAnswer: answer, timerSeconds: seconds, ...(extra || {}),
 });
 const ordering = (question: string, correctOrder: string[], extra?: any) => ({
-  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: [...correctOrder].sort(() => Math.random() - 0.5), ...(extra || {}),
+  id: nextId(), type: 'ordering' as const, question, correctOrder, shuffledItems: correctOrder, ...(extra || {}),
 });
 const matching = (question: string, pairs: { left: string; right: string }[], extra?: any) => ({
   id: nextId(), type: 'matching' as const, question, pairs, ...(extra || {}),

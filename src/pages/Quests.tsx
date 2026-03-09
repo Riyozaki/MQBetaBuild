@@ -48,7 +48,7 @@ const Quests: React.FC = () => {
   }
 
   // Filter out habits and story quests for the Quest Book
-  const questBookQuests = quests.filter(q => !q.isHabit && q.type !== 'story');
+  const questBookQuests = quests.filter(q => !q.isHabit && q.type !== 'story' && !q.disabled);
 
   // Derive categories from quests
   const categories = useMemo(() => {
