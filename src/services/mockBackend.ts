@@ -87,7 +87,12 @@ export const handleMockRequest = async (action: string, data: any): Promise<any>
                 token: generateToken(),
                 user: user,
                 progress: user,
-                info: user,
+                info: db.inventory[email] || {
+                    items: [],
+                    equipment: { weapon: null, armor: null, helmet: null, accessory: null },
+                    dungeonProgress: {},
+                    dungeonEnergy: { current: 10, max: 10, nextRegenAt: null }
+                },
                 quests: [],
                 guild: user.guildId ? db.guilds[user.guildId] : null,
                 daily: {
@@ -101,6 +106,12 @@ export const handleMockRequest = async (action: string, data: any): Promise<any>
             const user = db.users[email];
             if (!user) {
                 return { success: false, error: 'User not found', errorCode: 'AUTH_FAILED' };
+            }
+            
+            // Check token
+            if (data.token && user.token !== data.token) {
+                // For now, we don't strictly enforce token in mock to avoid breaking existing sessions,
+                // but we should ideally check it.
             }
             
             const today = new Date().toISOString().split('T')[0];
@@ -118,7 +129,12 @@ export const handleMockRequest = async (action: string, data: any): Promise<any>
                 success: true,
                 user: user,
                 progress: user,
-                info: user,
+                info: db.inventory[email] || {
+                    items: [],
+                    equipment: { weapon: null, armor: null, helmet: null, accessory: null },
+                    dungeonProgress: {},
+                    dungeonEnergy: { current: 10, max: 10, nextRegenAt: null }
+                },
                 quests: [],
                 guild: user.guildId ? db.guilds[user.guildId] : null,
                 daily: {
@@ -208,6 +224,27 @@ export const handleMockRequest = async (action: string, data: any): Promise<any>
             const inv = db.inventory[email];
             if (!inv) return { success: false, error: 'Inventory not found' };
             
+            // Remove from items
+            const itemIndex = inv.items.findIndex((i: any) => i.itemId === data.itemId);
+            if (itemIndex !== -1) {
+                if (inv.items[itemIndex].quantity > 1) {
+                    inv.items[itemIndex].quantity -= 1;
+                } else {
+                    inv.items.splice(itemIndex, 1);
+                }
+            }
+            
+            // If something is already equipped, put it back to items
+            const currentEquipped = inv.equipment[data.slot];
+            if (currentEquipped) {
+                const existing = inv.items.find((i: any) => i.itemId === currentEquipped);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    inv.items.push({ itemId: currentEquipped, quantity: 1, obtainedAt: new Date().toISOString() });
+                }
+            }
+            
             inv.equipment[data.slot] = data.itemId;
             saveDB(db);
             return { success: true };
@@ -215,6 +252,16 @@ export const handleMockRequest = async (action: string, data: any): Promise<any>
         case 'unequipItem': {
             const inv = db.inventory[email];
             if (!inv) return { success: false, error: 'Inventory not found' };
+            
+            const currentEquipped = inv.equipment[data.slot];
+            if (currentEquipped) {
+                const existing = inv.items.find((i: any) => i.itemId === currentEquipped);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    inv.items.push({ itemId: currentEquipped, quantity: 1, obtainedAt: new Date().toISOString() });
+                }
+            }
             
             inv.equipment[data.slot] = null;
             saveDB(db);

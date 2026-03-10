@@ -1,19 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { motion } from 'framer-motion';
-import { Sword, Shield, Heart, Zap, Skull, ArrowLeft } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, ArrowLeft, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { DUNGEONS_DB } from '../data/dungeonsDatabase';
+import DungeonBattleEngine from '../components/dungeon/DungeonBattleEngine';
 
 const Dungeon: React.FC = () => {
     const { user } = useAuth();
     const { dungeonEnergy, dungeonProgress } = useSelector((state: RootState) => state.inventory);
+    const [activeDungeon, setActiveDungeon] = useState<string | null>(null);
 
     if (!user) return null;
 
+    if (activeDungeon) {
+        const dungeon = DUNGEONS_DB.find(d => d.id === activeDungeon);
+        if (dungeon) {
+            return <DungeonBattleEngine dungeon={dungeon} onClose={() => setActiveDungeon(null)} />;
+        }
+    }
+
     return (
-        <div className="max-w-4xl mx-auto pb-24">
+        <div className="max-w-4xl mx-auto pb-24 p-4">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
@@ -38,32 +48,35 @@ const Dungeon: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="glass-panel p-8 rounded-2xl border border-slate-700/50 text-center">
-                <div className="w-24 h-24 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-6 border-2 border-slate-700">
-                    <Skull size={48} className="text-slate-500" />
-                </div>
-                <h2 className="text-2xl font-bold text-white mb-4">Врата закрыты</h2>
-                <p className="text-slate-400 max-w-md mx-auto mb-8">
-                    Подземелья находятся в разработке. Скоро здесь появятся опасные монстры, эпические боссы и легендарный лут!
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto text-left">
-                    <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                        <Sword className="text-red-400 mb-2" size={24} />
-                        <h3 className="font-bold text-white mb-1">Сражения</h3>
-                        <p className="text-sm text-slate-400">Решай математические задачи для атаки</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {DUNGEONS_DB.map(dungeon => (
+                    <div key={dungeon.id} className="glass-panel p-6 rounded-2xl border border-slate-700/50 flex flex-col">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">{dungeon.name}</h3>
+                                <p className="text-sm text-slate-400">{dungeon.description}</p>
+                            </div>
+                            <div className="flex items-center gap-1 bg-blue-500/20 text-blue-400 px-2 py-1 rounded-lg text-sm font-bold">
+                                <Zap size={14} />
+                                {dungeon.energyCost}
+                            </div>
+                        </div>
+                        
+                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-700/50">
+                            <div className="text-sm text-slate-400">
+                                Ур. {dungeon.minLevel}+
+                            </div>
+                            <button
+                                onClick={() => setActiveDungeon(dungeon.id)}
+                                disabled={dungeonEnergy.current < dungeon.energyCost || user.level < dungeon.minLevel}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl font-bold transition-colors"
+                            >
+                                <Play size={16} />
+                                Войти
+                            </button>
+                        </div>
                     </div>
-                    <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                        <Shield className="text-blue-400 mb-2" size={24} />
-                        <h3 className="font-bold text-white mb-1">Экипировка</h3>
-                        <p className="text-sm text-slate-400">Добывай броню и оружие с боссов</p>
-                    </div>
-                    <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                        <Heart className="text-emerald-400 mb-2" size={24} />
-                        <h3 className="font-bold text-white mb-1">Прогресс</h3>
-                        <p className="text-sm text-slate-400">Спускайся глубже для лучших наград</p>
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     );

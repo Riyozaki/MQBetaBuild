@@ -541,19 +541,14 @@ export const loginLocal = createAsyncThunk(
 
 export const registerLocal = createAsyncThunk(
   'user/register',
-  async (payload: { email: string; password: string; username: string; hasConsent: boolean, grade?: number }) => {
+  async (payload: { email: string; password: string; username: string; hasConsent: boolean, grade?: number }, { dispatch }) => {
     await api.register(payload.email, payload.password, payload.username, payload.grade || 7);
-    const newUserState: UserProfile = {
-        ...DEFAULT_USER_DATA,
-        email: payload.email.toLowerCase().trim(),
-        username: payload.username,
-        grade: payload.grade || 7,
-        hasParentalConsent: payload.hasConsent,
-        lastLoginDate: new Date().toISOString().split('T')[0]
-    } as UserProfile;
-    localStorage.setItem(STORAGE_KEY_EMAIL, newUserState.email);
-    analytics.track('register', newUserState, { email: payload.email });
-    return { user: newUserState, reward: null };
+    
+    // Automatically login after registration to fetch full state and inventory
+    const loginResult = await dispatch(loginLocal({ email: payload.email, password: payload.password })).unwrap();
+    
+    analytics.track('register', loginResult.user, { email: payload.email });
+    return { user: loginResult.user, reward: loginResult.reward };
   }
 );
 

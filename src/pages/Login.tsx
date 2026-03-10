@@ -10,7 +10,7 @@ import { contentFilter } from '../utils/contentFilter';
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ email: '', password: '', username: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', username: '', grade: 7 });
   
   // New Consent States
   const [hasDataConsent, setHasDataConsent] = useState(false);
@@ -23,7 +23,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError('');
   };
@@ -68,6 +68,7 @@ const Login: React.FC = () => {
           email: formData.email,
           password: formData.password,
           username: formData.username,
+          grade: Number(formData.grade),
           hasConsent: hasParentalConsent // Pass this to backend/store if needed
         })).unwrap();
       }
@@ -134,6 +135,25 @@ const Login: React.FC = () => {
                     className="block w-full pl-10 pr-3 py-3 bg-slate-900/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-slate-600 transition-all outline-none"
                     placeholder="Артур"
                   />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Класс обучения</label>
+                <div className="relative">
+                  <select
+                    name="grade"
+                    value={formData.grade}
+                    onChange={handleChange}
+                    className="block w-full px-3 py-3 bg-slate-900/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white transition-all outline-none appearance-none"
+                  >
+                    {[5, 6, 7, 8, 9, 10, 11].map(g => (
+                      <option key={g} value={g}>{g} Класс</option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
                 </div>
               </div>
 
