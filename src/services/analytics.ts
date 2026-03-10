@@ -72,23 +72,8 @@ class AnalyticsService {
     this.queue = []; // Очищаем очередь
 
     try {
-      // Используем action='analytics' если скрипт это поддерживает, или просто отправляем массив
-      // Так как структура скрипта изменилась, лучше обернуть в стандартный формат API
-      const payload = JSON.stringify({
-        action: 'analyticsBatch',
-        events: batch
-      });
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8', 
-        },
-        body: payload,
-      });
-
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-
+      // Mock flush
+      console.log('Mock analytics flush', batch);
     } catch (error) {
       console.warn('Analytics flush failed, returning to queue:', error);
       this.queue = [...batch, ...this.queue]; // Возвращаем в очередь

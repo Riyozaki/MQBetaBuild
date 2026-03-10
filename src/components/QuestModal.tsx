@@ -11,6 +11,7 @@ import { RootState, AppDispatch } from '../store';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 import LoadingOverlay from './LoadingOverlay';
 import { CATEGORY_TRANSLATIONS } from '../data/questTypes';
+import { getItemById } from '../data/itemsDatabase';
 
 // Import task components
 import QuizTask from './QuizTask';
@@ -349,7 +350,7 @@ const QuestModal: React.FC<QuestModalProps> = ({ quest, isOpen, onClose, multipl
       finalMultiplier = finalMultiplier * multiplier * hintPenaltyMultiplier * currentEffectiveLocMod;
 
       try {
-          await dispatch(completeQuestAction({ quest, multiplier: finalMultiplier })).unwrap();
+          const result = await dispatch(completeQuestAction({ quest, multiplier: finalMultiplier })).unwrap();
           
           // Clear cached progress & hints on success
           localStorage.removeItem(`quest_progress_${quest.id}`);
@@ -369,6 +370,11 @@ const QuestModal: React.FC<QuestModalProps> = ({ quest, isOpen, onClose, multipl
           }
           if (finalMultiplier >= 1.0) {
               toast.success(`Успех! Бонус: x${multiplier}`);
+          }
+          
+          if (result.loot && result.loot.length > 0) {
+              const lootMsg = result.loot.map((l: any) => `${l.quantity}x ${l.itemId}`).join(', ');
+              toast.success(`Получена добыча: ${lootMsg}`, { icon: () => "🎁" });
           }
       } catch (error: any) {
           console.error("Completion failed", error);

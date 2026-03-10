@@ -272,104 +272,41 @@ const debouncedFlush = () => {
     flushTimer = setTimeout(flushOfflineQueue, 3000);
 };
 
-const request = async <T = any>(action: string, data: any = {}, method: 'POST' | 'GET' = 'POST', retryCount = 0, skipQueue = false): Promise<T> => {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), TIMEOUT_MS);
+import { handleMockRequest } from './mockBackend';
 
+const request = async <T = any>(action: string, data: any = {}, method: 'POST' | 'GET' = 'POST', retryCount = 0, skipQueue = false): Promise<T> => {
     try {
-        let url = API_URL;
-        
         // Normalize email on frontend too
         if (data.email) {
             data.email = data.email.trim().toLowerCase();
         }
 
-        // v3: Добавляем токен к запросам
-        const token = getToken();
-
-        const options: RequestInit = {
-            method,
-            headers: {
-                'Content-Type': CONTENT_TYPE, 
-            },
-            signal: controller.signal,
-        };
-
-        if (method === 'GET') {
-            const params = new URLSearchParams({ action, ...data });
-            // v3: добавляем token к GET-запросам (для admin endpoints)
-            if (token) params.set('token', token);
-            url = `${API_URL}?${params.toString()}`;
-        } else {
-            // v3: добавляем token в тело POST
-            if (token) data.token = token;
-            options.body = JSON.stringify({ action, ...data });
-        }
-
-        const response = await fetch(url, options);
-        clearTimeout(id);
+        const result = await handleMockRequest(action, data);
         
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
-        }
-
-        const result: ApiResult = await response.json();
-        
-        if (result.error) {
-            // v3: Более информативная обработка ошибок
+        if (!result.success && result.error) {
             if (result.errorCode === 'AUTH_FAILED') {
                 throw new Error(result.error);
             }
             if (result.errorCode === 'INSUFFICIENT_FUNDS') {
                 throw new Error('Недостаточно монет!');
             }
-            // Retry logic for "User not found" which might be a latency issue on sheets
-            if (result.error.includes('User not found') && retryCount < 3) {
-                console.warn(`[${action}] User not found, retrying... (Attempt ${retryCount + 1})`);
-                await sleep(500 * (retryCount + 1));
-                return request<T>(action, data, method, retryCount + 1, skipQueue);
-            }
             throw new Error(result.error);
-        }
-
-        // On Success: Try to flush pending offline requests in background
-        if (!skipQueue) {
-            debouncedFlush(); 
         }
 
         if (method === 'GET') cacheGetResponse(action, data.email || '', result);
 
-        // v3.3: Кэшируем initSession/loginFull как если бы это был getAllUserData
         if (action === 'initSession' || action === 'loginFull') {
             cacheGetResponse('getAllUserData', data.email || '', result);
         }
 
         return result as T;
     } catch (error: any) {
-        clearTimeout(id);
-        
-        const isNetworkError = error.name === 'AbortError' || error.message.includes('Failed to fetch') || error.message.includes('NetworkError');
-        
-        if (isNetworkError && !skipQueue && method === 'POST') {
-             saveToQueue(action, data);
-             throw new Error("OFFLINE_SAVED");
-        }
-
-        if (isNetworkError && method === 'GET') {
-            const cached = getCachedResponse(action, data.email || '');
-            if (cached) return cached as T;
-        }
-        
-        if (error.name === 'AbortError') {
-             throw new Error("Сервер долго отвечает. Google Таблицы могут спать, попробуйте еще раз.");
-        }
-        
         throw error;
     }
 };
 
 export const ping = () => {
-    fetch(API_URL + '?action=ping').catch(() => {});
+    // Mock ping
 };
 
 export const startKeepAlive = () => {
@@ -452,7 +389,7 @@ export const api = {
 
     // ── 4. Завершение квеста (v3: + habitStreaks) ──
     completeQuest: async (payload: CompleteQuestPayload) => {
-        return await request<{success: true}>('completeQuest', payload);
+        return await request<{success: true, loot?: { itemId: string; quantity: number }[]}>('completeQuest', payload);
     },
 
     // ── 5. Босс-битва ──
@@ -631,6 +568,26 @@ export const api = {
 
     sendGuildMessage: async (email: string, message: string, messageType: 'text' | 'system' | 'achievement' = 'text') => {
         return await request<{success: true}>('sendGuildMessage', { email, message, messageType });
+    },
+
+    // v4.0: Item System
+    getInventory: async (email: string) => {
+        return await request<any>('getInventory', { email });
+    },
+    equipItem: async (email: string, itemId: string, slot: string, classRestriction?: string[], playerClass?: string) => {
+        return await request<any>('equipItem', { email, itemId, slot, classRestriction, playerClass });
+    },
+    unequipItem: async (email: string, slot: string) => {
+        return await request<any>('unequipItem', { email, slot });
+    },
+    usePotion: async (email: string, itemId: string) => {
+        return await request<any>('usePotion', { email, itemId });
+    },
+    craftItem: async (email: string, recipeId: string, materials: any[], resultItemId: string, resultQuantity: number) => {
+        return await request<any>('craftItem', { email, recipeId, materials, resultItemId, resultQuantity });
+    },
+    addToInventory: async (email: string, items: { itemId: string; quantity: number }[]) => {
+        return await request<any>('addToInventory', { email, items });
     },
 
     // Expose flush for manual triggering

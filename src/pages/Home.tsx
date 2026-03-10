@@ -144,30 +144,34 @@ const StoryDashboard: React.FC = () => {
       <AnimatePresence mode="wait">
           {viewMode === 'dashboard' && (
               <motion.div key="dashboard" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3 }}>
-                  <DashboardView 
-                    user={user} 
-                    quests={quests} 
-                    shopItems={shopItems} 
-                    onQuestSelect={handleQuestOpen}
-                  />
+                  <ErrorBoundary>
+                      <DashboardView 
+                        user={user} 
+                        quests={quests} 
+                        shopItems={shopItems} 
+                        onQuestSelect={handleQuestOpen}
+                      />
+                  </ErrorBoundary>
               </motion.div>
           )}
           
           {viewMode === 'campaign' && (
               <motion.div key="campaign" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                   {hasCampaignQuests ? (
-                      <CampaignView 
-                        currentDayNum={currentDayNum}
-                        currentStory={currentStory}
-                        storyQuests={storyQuests}
-                        completedCount={completedCount}
-                        totalCount={totalCount}
-                        onQuestSelect={(q) => handleQuestOpen(q)}
-                        onBossOpen={() => setIsBossModalOpen(true)}
-                        onAdvanceDay={() => dispatch(advanceCampaignDay())}
-                        isDayComplete={user.campaign?.isDayComplete}
-                        user={user}
-                      />
+                      <ErrorBoundary>
+                          <CampaignView 
+                            currentDayNum={currentDayNum}
+                            currentStory={currentStory}
+                            storyQuests={storyQuests}
+                            completedCount={completedCount}
+                            totalCount={totalCount}
+                            onQuestSelect={(q) => handleQuestOpen(q)}
+                            onBossOpen={() => setIsBossModalOpen(true)}
+                            onAdvanceDay={() => dispatch(advanceCampaignDay())}
+                            isDayComplete={user.campaign?.isDayComplete}
+                            user={user}
+                          />
+                      </ErrorBoundary>
                   ) : (
                       <div className="text-center py-16 bg-slate-900/50 rounded-3xl border border-slate-700/50">
                           <p className="text-slate-400 text-lg mb-4">

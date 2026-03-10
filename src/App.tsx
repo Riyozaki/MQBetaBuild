@@ -38,6 +38,8 @@ const Admin = React.lazy(() => import('./pages/Admin'));
 const Guild = React.lazy(() => import('./pages/Guild'));
 const GuildsList = React.lazy(() => import('./pages/GuildsList'));
 const GuildProfile = React.lazy(() => import('./pages/GuildProfile'));
+const Dungeon = React.lazy(() => import('./pages/Dungeon'));
+const Inventory = React.lazy(() => import('./pages/Inventory'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 // Loading Fallback (Replaced by RPGLoader)
@@ -124,6 +126,8 @@ const AnimatedRoutes: React.FC = () => {
                         <Route path="/guild" element={<ProtectedRoute><ErrorBoundary><GuildWrapper /></ErrorBoundary></ProtectedRoute>} />
                         <Route path="/guilds" element={<ProtectedRoute><ErrorBoundary><GuildsList /></ErrorBoundary></ProtectedRoute>} />
                         <Route path="/guilds/:guildId" element={<ProtectedRoute><ErrorBoundary><GuildProfile /></ErrorBoundary></ProtectedRoute>} />
+                        <Route path="/dungeon" element={<ProtectedRoute><ErrorBoundary><Dungeon /></ErrorBoundary></ProtectedRoute>} />
+                        <Route path="/inventory" element={<ProtectedRoute><ErrorBoundary><Inventory /></ErrorBoundary></ProtectedRoute>} />
                         <Route path="/admin" element={<AdminRoute><ErrorBoundary><Admin /></ErrorBoundary></AdminRoute>} />
                         <Route path="*" element={<ErrorBoundary><NotFound /></ErrorBoundary>} />
                     </Routes>

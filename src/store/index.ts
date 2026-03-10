@@ -5,6 +5,7 @@ import rewardsReducer from './rewardsSlice';
 import socialReducer from './socialSlice';
 import adminReducer from './adminSlice';
 import guildReducer from './guildSlice';
+import inventoryReducer from './inventorySlice';
 import { listenerMiddleware } from './listenerMiddleware';
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
     social: socialReducer,
     admin: adminReducer,
     guild: guildReducer,
+    inventory: inventoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(listenerMiddleware.middleware),

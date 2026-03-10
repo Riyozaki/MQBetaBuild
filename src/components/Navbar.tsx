@@ -28,6 +28,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { path: '/', label: 'Штаб', icon: Home, public: true },
     { path: '/quests', label: 'Миссии', icon: Sword, public: false },
+    { path: '/dungeon', label: 'Подземелья', icon: Sword, public: false },
     { path: '/calendar', label: 'Календарь', icon: CalendarDays, public: false },
     { path: '/rewards', label: 'Лавка', icon: ShoppingBag, public: false },
     { path: '/guild', label: 'Гильдия', icon: Shield, public: false },

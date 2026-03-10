@@ -12,6 +12,7 @@ import { CALENDAR_CONFIG } from './rewardsSlice';
 // Import actions from other slices for extraReducers
 import { completeQuestAction } from './actions';
 import { createGuild, guildDonate, leaveGuild, joinGuild, fetchMyGuild, contributeGuildQuest } from './guildSlice';
+import { setInventoryFromLogin } from './inventorySlice';
 import { calculateNextLevelXp, applyXpGain } from '../utils/levelUtils';
 import { gradeToGroup } from '../data/questTypes';
 
@@ -459,6 +460,15 @@ export const initAuth = createAsyncThunk('user/initAuth', async (_, { dispatch }
             }
         }
         
+        if (response.info) {
+            dispatch(setInventoryFromLogin({
+                inventory: response.info.inventory,
+                equipment: response.info.equipment,
+                dungeonProgress: response.info.dungeonProgress,
+                dungeonEnergy: response.info.dungeonEnergy
+            }));
+        }
+        
         cleanupStaleQuestCache();
         return { user: normalizedUser, reward };
     } catch (e: any) {
@@ -466,7 +476,12 @@ export const initAuth = createAsyncThunk('user/initAuth', async (_, { dispatch }
             console.log("Auth Init: Offline mode active. Request queued.");
             return null;
         }
-        console.error("Auth Init Failed:", e);
+        console.error("Auth Init Failed:\n", e.message);
+        if (e.message === 'User not found') {
+            localStorage.removeItem(STORAGE_KEY_EMAIL);
+            localStorage.removeItem('motiva_session_token');
+            dispatch({ type: 'user/clearUser' });
+        }
         return null;
     }
 });
@@ -509,6 +524,15 @@ export const loginLocal = createAsyncThunk(
          api.updateProgress(normalizedUser.email, {
              currentXp, level, coins: normalizedUser.coins, totalCoinsEarned: normalizedUser.totalCoinsEarned
          }).catch(console.warn);
+    }
+
+    if (response.info) {
+        dispatch(setInventoryFromLogin({
+            inventory: response.info.inventory,
+            equipment: response.info.equipment,
+            dungeonProgress: response.info.dungeonProgress,
+            dungeonEnergy: response.info.dungeonEnergy
+        }));
     }
 
     return { user: normalizedUser, reward };

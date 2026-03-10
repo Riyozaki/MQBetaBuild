@@ -8,7 +8,8 @@ import { useSoundEffects } from '../../hooks/useSoundEffects';
 import { fireConfetti } from '../../utils/confetti';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { Award, ShoppingBag, CheckCircle, Coffee, Star, Clock } from 'lucide-react';
+import { Award, ShoppingBag, CheckCircle, Coffee, Star, Clock, Sword, Shield, Backpack } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LoadingOverlay from '../LoadingOverlay';
 import Survey from '../Survey';
 import HabitCard from './HabitCard';
@@ -119,6 +120,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({ user, quests, shopItems, 
     const isPendingPurchase = useSelector(selectIsPending('purchase'));
     const nextRegenTime = useSelector((state: RootState) => state.user.nextRegenTime);
     
+    // v4.0 Selectors
+    const dungeonEnergy = useSelector((state: RootState) => state.inventory?.dungeonEnergy || { current: 10, max: 10 });
+    const inventoryItems = useSelector((state: RootState) => state.inventory?.items || []);
+    const guild = useSelector((state: RootState) => state.guild?.guild);
+    const activeRaid = guild?.quests?.find(q => q.questType === 'collective' && q.status === 'active');
+    
     // Derived state
     const habits = quests.filter(q => q.isHabit);
     
@@ -228,6 +235,60 @@ const DashboardView: React.FC<DashboardViewProps> = ({ user, quests, shopItems, 
                     </div>
                 </div>
             </motion.div>
+
+            {/* Quick Actions (v4.0) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Dungeons */}
+                <Link to="/dungeon" className="glass-panel p-4 rounded-2xl border border-slate-700/50 hover:border-blue-500/50 transition-colors group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors"></div>
+                    <div className="flex items-center gap-3 mb-2 relative z-10">
+                        <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                            <Sword size={20} />
+                        </div>
+                        <h3 className="font-bold text-white">Подземелья</h3>
+                    </div>
+                    <div className="flex justify-between items-center text-sm relative z-10">
+                        <span className="text-slate-400">Энергия</span>
+                        <span className="font-bold text-blue-400">{dungeonEnergy.current}/{dungeonEnergy.max} ⚡</span>
+                    </div>
+                </Link>
+
+                {/* Guild Raid */}
+                <Link to="/guild" className="glass-panel p-4 rounded-2xl border border-slate-700/50 hover:border-red-500/50 transition-colors group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-colors"></div>
+                    <div className="flex items-center gap-3 mb-2 relative z-10">
+                        <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
+                            <Shield size={20} />
+                        </div>
+                        <h3 className="font-bold text-white">Гильдейский рейд</h3>
+                    </div>
+                    <div className="flex justify-between items-center text-sm relative z-10">
+                        {activeRaid ? (
+                            <>
+                                <span className="text-slate-400">Босс</span>
+                                <span className="font-bold text-red-400">{Math.max(0, activeRaid.targetValue - activeRaid.currentValue)} HP</span>
+                            </>
+                        ) : (
+                            <span className="text-slate-500">Нет активного рейда</span>
+                        )}
+                    </div>
+                </Link>
+
+                {/* Inventory */}
+                <Link to="/inventory" className="glass-panel p-4 rounded-2xl border border-slate-700/50 hover:border-emerald-500/50 transition-colors group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors"></div>
+                    <div className="flex items-center gap-3 mb-2 relative z-10">
+                        <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                            <Backpack size={20} />
+                        </div>
+                        <h3 className="font-bold text-white">Инвентарь</h3>
+                    </div>
+                    <div className="flex justify-between items-center text-sm relative z-10">
+                        <span className="text-slate-400">Предметов</span>
+                        <span className="font-bold text-emerald-400">{inventoryItems.length}</span>
+                    </div>
+                </Link>
+            </div>
 
             {/* Mood Tracker */}
             <Survey />

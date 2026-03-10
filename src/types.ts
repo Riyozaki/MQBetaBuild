@@ -256,6 +256,12 @@ export interface UserProfile {
     isDayComplete: boolean;
     unlockedAllies: string[];
   };
+
+  // v4.0: Item System
+  inventoryItems: InventoryItem[];
+  equipment: EquipmentSlots;
+  dungeonProgress: DungeonProgress;
+  dungeonEnergy?: { current: number; max: number; nextRegenAt: string | null };
 }
 
 export interface LeaderboardUser {
@@ -456,4 +462,129 @@ export interface GuildPublicInfo {
   createdAt: string;
   members: { username: string; level: number; role: GuildRole; avatar?: string }[];
   achievements: GuildAchievement[];
+}
+
+// ═══ v4.0: СИСТЕМА ПРЕДМЕТОВ ═══
+
+export type ItemType = 'weapon' | 'armor' | 'helmet' | 'accessory' | 'potion' | 'material';
+export type ItemRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
+export type EquipmentSlot = 'weapon' | 'armor' | 'helmet' | 'accessory';
+
+export interface ItemStats {
+  attack?: number;       // +урон в подземельях
+  defense?: number;      // -входящий урон
+  speed?: number;        // +время на решение примера (секунды)
+  mathBonus?: number;    // +% к урону за правильный ответ
+  xpBonus?: number;      // +% к получаемому XP
+  coinBonus?: number;    // +% к получаемому золоту
+  hpBonus?: number;      // +макс HP
+  critChance?: number;   // шанс крит-удара (0.0 - 1.0)
+}
+
+export interface GameItem {
+  id: string;                    // Уникальный ID (например 'w_mage_r_01')
+  name: string;                  // Название на русском
+  description: string;           // Описание
+  type: ItemType;                // Тип предмета
+  slot?: EquipmentSlot;          // Для экипируемых — куда ставить
+  rarity: ItemRarity;
+  icon: string;                  // Имя иконки из lucide-react
+  stats?: ItemStats;             // Бонусы экипировки
+  classRestriction?: HeroClass[];// Какие классы могут носить (пусто = все)
+  setId?: string;                // ID сета (если часть сета)
+  stackable: boolean;            // Стакается ли (материалы, зелья — да)
+  maxStack: number;              // Макс стак (1 для экипировки, 99 для материалов)
+  sellPrice: number;             // Цена продажи NPC
+  buyPrice?: number;             // Цена покупки в магазине (если продаётся)
+}
+
+export interface InventoryItem {
+  itemId: string;
+  quantity: number;
+  obtainedAt?: string;
+}
+
+export interface EquipmentSlots {
+  weapon: string | null;
+  armor: string | null;
+  helmet: string | null;
+  accessory: string | null;
+}
+
+export interface SetBonus {
+  setId: string;
+  setName: string;
+  pieces: string[];          // ID предметов в сете
+  bonuses: {
+    required: number;        // Сколько нужно предметов
+    stats: ItemStats;        // Какие бонусы
+    label: string;           // Описание бонуса
+  }[];
+}
+
+export interface DungeonEnemy {
+  id: string;
+  name: string;
+  icon: string;
+  hp: number;
+  attack: number;
+  defense: number;
+  mathDifficulty: 'easy' | 'medium' | 'hard';
+  xpReward: number;
+  coinReward: number;
+  isBoss: boolean;
+}
+
+export interface DungeonFloor {
+  floor: number;
+  enemies: DungeonEnemy[];
+  isBossFloor: boolean;
+}
+
+export interface DungeonData {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  requiredLevel: number;
+  floors: DungeonFloor[];
+  gradeGroup: GradeGroup;
+  rewards: {
+    xp: number;
+    coins: number;
+    guaranteedDrop?: string;   // ID гарантированного предмета
+  };
+}
+
+export interface DungeonProgress {
+  [dungeonId: string]: {
+    bestFloor: number;
+    completedAt: string | null;
+    attempts: number;
+    totalKills: number;
+    totalDamageDealt: number;
+    lastRunDate: string | null;
+  };
+}
+
+export interface CraftRecipe {
+  id: string;
+  name: string;
+  resultItemId: string;
+  resultQuantity: number;
+  materials: { itemId: string; quantity: number }[];
+  requiredLevel?: number;
+}
+
+export interface TradeOffer {
+  tradeId: string;
+  guildId: string;
+  sellerEmail: string;
+  offeredItemId: string;
+  offeredQuantity: number;
+  requestedItemId: string;
+  requestedQuantity: number;
+  status: 'active' | 'completed' | 'cancelled' | 'expired';
+  createdAt: string;
+  expiresAt: string;
 }

@@ -7,6 +7,7 @@ import { audio } from '../services/audio';
 import { getTasksForQuest } from '../data';
 import { rawQuests } from '../data/defaultQuests';
 import { calculateNextLevelXp } from '../utils/levelUtils';
+import { generateLoot } from '../data/itemsDatabase';
 
 // Minimal interface to break circular dependency
 interface StateWithUser {
@@ -268,6 +269,7 @@ export const completeQuestAction = createAsyncThunk(
         };
         
         // Call Extended API
+        let loot: { itemId: string; quantity: number }[] | undefined;
         try {
             const apiPayload: CompleteQuestPayload = {
                 email: user.email,
@@ -289,7 +291,17 @@ export const completeQuestAction = createAsyncThunk(
                     ? { ...(user.habitStreaks || {}), [String(quest.id)]: ((user.habitStreaks?.[String(quest.id)]) || 0) + 1 }
                     : undefined
             };
-            await api.completeQuest(apiPayload);
+            const response = await api.completeQuest(apiPayload);
+            loot = response.loot;
+            
+            // If backend didn't return loot, generate it locally
+            if (!loot || loot.length === 0) {
+                loot = generateLoot(quest.rarity, user.heroClass);
+                if (loot.length > 0) {
+                    // Fire and forget to save to backend
+                    api.addToInventory(user.email, loot).catch(console.error);
+                }
+            }
         } catch (e) { handleApiError(e); }
         
         return { 
@@ -300,7 +312,8 @@ export const completeQuestAction = createAsyncThunk(
             hpLost,
             newLevel: currentLevel,
             newXp: newXpTotal,
-            newNextLevelXp: nextLevelXp
+            newNextLevelXp: nextLevelXp,
+            loot
         };
     },
     {
